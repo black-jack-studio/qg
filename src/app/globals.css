@@ -1,0 +1,320 @@
+@import "tailwindcss";
+
+/* DA FaceUp Pairs : plateau #1C1C1E, blocs noirs arrondis à 12px comme les contrôles,
+   bleu système pour l'action principale, pastels réservés aux badges. */
+@theme {
+  --color-board: #1c1c1e;
+  --color-rail: #0e0e0f;
+  --color-card: #000000;
+  --color-lift: #141415;
+  --color-ink: #f5f5f5;
+  --color-muted: #8a8a8e;
+  --color-faint: #5a5a5e;
+  --color-hair: rgb(255 255 255 / 0.14);
+  --color-hair-soft: rgb(255 255 255 / 0.08);
+  --color-accent: #0a84ff;
+  --color-accent-hover: #3395ff;
+  --color-danger: #ff6b6b;
+  --color-green: #b5f3c7;
+  --color-purple: #b79cff;
+  --color-blue: #8ccbff;
+  --color-gold: #f8ca5a;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, Roboto, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+
+  --radius-control: 12px;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  color-scheme: dark;
+  background: var(--color-board);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-board);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  caret-color: var(--color-accent);
+}
+
+::selection {
+  background: rgb(10 132 255 / 0.45);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Aucun angle droit, y compris l'anneau de focus des champs et boutons nus
+   (:where = spécificité nulle, les classes .field/.btn gardent leur propre radius). */
+:where(input:not([type="checkbox"], [type="radio"]), textarea, button, a) {
+  border-radius: 10px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.18) transparent;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+  cursor: pointer;
+}
+
+@layer components {
+  /* Contrôles : arrondis, jamais sur la grille. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: var(--radius-control);
+    background: var(--color-card);
+    border: 1px solid var(--color-hair);
+    color: var(--color-ink);
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 150ms,
+      border-color 150ms,
+      opacity 150ms;
+  }
+  .btn:hover {
+    border-color: rgb(255 255 255 / 0.28);
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    border-color: transparent;
+    color: #fff;
+    font-weight: 700;
+  }
+  .btn-primary:hover {
+    background: var(--color-accent-hover);
+    border-color: transparent;
+  }
+  .btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--color-muted);
+  }
+  .btn-ghost:hover {
+    color: var(--color-ink);
+    background: rgb(255 255 255 / 0.06);
+    border-color: transparent;
+  }
+  .btn-danger {
+    color: var(--color-danger);
+  }
+  .btn-sm {
+    height: 30px;
+    padding: 0 10px;
+    font-size: 12px;
+    border-radius: 10px;
+  }
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 10px;
+  }
+
+  .field {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: var(--radius-control);
+    background: var(--color-card);
+    border: 1px solid var(--color-hair);
+    color: var(--color-ink);
+    font-size: 14px;
+    transition: border-color 150ms;
+  }
+  .field::placeholder {
+    color: var(--color-muted);
+  }
+  .field:hover {
+    border-color: rgb(255 255 255 / 0.24);
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-accent);
+  }
+  textarea.field {
+    height: auto;
+    padding: 10px 12px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  select.field {
+    appearance: none;
+    padding-right: 30px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8A8E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+  }
+  .field-sm {
+    height: 30px;
+    font-size: 12px;
+    border-radius: 10px;
+    padding: 0 10px;
+  }
+  select.field-sm {
+    padding-right: 26px;
+    background-position: right 8px center;
+  }
+
+  .label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+
+  /* Blocs : noirs, sans bordure, même arrondi que les contrôles (choix de Stan). */
+  .tile {
+    background: var(--color-card);
+    border-radius: var(--radius-control);
+  }
+}
+
+/* Retournement de carte (signature : révéler un mot de passe). */
+.flip {
+  perspective: 1400px;
+  height: 100%;
+}
+.flip-inner {
+  display: grid;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 520ms var(--ease-out-expo);
+}
+.flip-inner > * {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-back {
+  transform: rotateY(180deg);
+}
+.flip[data-flipped="true"] .flip-inner {
+  transform: rotateY(180deg);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+.rise {
+  animation: rise 220ms var(--ease-out-expo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip-inner {
+    transition: none;
+  }
+  .rise {
+    animation: none;
+  }
+}
+
+/* Rendu markdown des notes. */
+.prose-qg {
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 72ch;
+}
+.prose-qg > * + * {
+  margin-top: 0.6em;
+}
+.prose-qg h1,
+.prose-qg h2,
+.prose-qg h3 {
+  font-weight: 800;
+  line-height: 1.25;
+  margin-top: 1.1em;
+}
+.prose-qg h1 {
+  font-size: 18px;
+}
+.prose-qg h2 {
+  font-size: 16px;
+}
+.prose-qg h3 {
+  font-size: 14px;
+}
+.prose-qg > :first-child {
+  margin-top: 0;
+}
+.prose-qg ul,
+.prose-qg ol {
+  padding-left: 1.3em;
+}
+.prose-qg ul {
+  list-style: disc;
+}
+.prose-qg ol {
+  list-style: decimal;
+}
+.prose-qg li::marker {
+  color: var(--color-muted);
+}
+.prose-qg a {
+  color: var(--color-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-qg code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  background: rgb(255 255 255 / 0.08);
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+.prose-qg pre {
+  background: var(--color-lift);
+  padding: 12px;
+  overflow-x: auto;
+}
+.prose-qg pre code {
+  background: none;
+  padding: 0;
+}
+.prose-qg blockquote {
+  border-left: 1px solid var(--color-hair);
+  padding-left: 12px;
+  color: var(--color-muted);
+}
+.prose-qg input[type="checkbox"] {
+  accent-color: var(--color-accent);
+  margin-right: 6px;
+}
+.prose-qg table {
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.prose-qg th,
+.prose-qg td {
+  border: 1px solid var(--color-hair-soft);
+  padding: 4px 8px;
+  text-align: left;
+}

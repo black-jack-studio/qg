@@ -1,0 +1,1 @@
+ALTER TABLE "services" ADD COLUMN "payer" text DEFAULT 'commun' NOT NULL;
