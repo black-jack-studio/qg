@@ -309,14 +309,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   padding-left: 12px;
   color: var(--color-muted);
 }
-.prose-qg input[type="checkbox"] {
-  accent-color: var(--color-accent);
-  margin-right: 6px;
-}
-.prose-qg li.task-list-item {
-  list-style: none;
-  margin-left: -1.3em;
-}
 .prose-qg table {
   border-collapse: collapse;
   font-size: 13px;

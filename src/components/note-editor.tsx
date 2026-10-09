@@ -3,9 +3,7 @@
 import { ChevronLeft, Pin, PinOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { useEffect, useLayoutEffect, useRef, useState, useTransition } from "react";
 import { deleteNote, saveNote } from "@/app/actions";
 import type { Note } from "@/db/schema";
 import { ConfirmButton } from "./confirm-button";
@@ -14,20 +12,43 @@ import type { BoardApp } from "./task-board";
 export function NoteEditor({ note, apps }: { note: Note; apps: BoardApp[] }) {
   const router = useRouter();
   const [, start] = useTransition();
-  const isFresh = !note.title && !note.body;
   const [title, setTitle] = useState(note.title);
   const [body, setBody] = useState(note.body);
-  const [editing, setEditing] = useState(isFresh);
+  const saved = useRef({ title: note.title, body: note.body });
+  const area = useRef<HTMLTextAreaElement>(null);
 
-  const save = (patch: { title?: string; body?: string }) => start(() => saveNote(note.id, patch));
+  const flush = () => {
+    if (title === saved.current.title && body === saved.current.body) return;
+    saved.current = { title, body };
+    start(() => saveNote(note.id, { title, body }));
+  };
+
+  // Sauvegarde auto quelques instants après la dernière frappe, comme Notes.
+  useEffect(() => {
+    if (title === saved.current.title && body === saved.current.body) return;
+    const t = setTimeout(() => {
+      saved.current = { title, body };
+      start(() => saveNote(note.id, { title, body }));
+    }, 700);
+    return () => clearTimeout(t);
+  }, [title, body, note.id]);
+
+  // La zone de texte grandit avec son contenu : la page défile, pas le champ.
+  useLayoutEffect(() => {
+    const el = area.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [body]);
+
   const updated = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }).format(
     new Date(note.updatedAt),
   );
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[760px] flex-col px-4 pt-6 pb-12 sm:px-8 md:pt-10">
+    <div className="mx-auto w-full max-w-[760px] px-4 pt-6 pb-12 sm:px-8 md:pt-10">
       <div className="mb-5 flex items-center justify-between gap-2">
-        <Link href="/notes" className="btn btn-ghost btn-sm -ml-2.5">
+        <Link href="/notes" onClick={flush} className="btn btn-ghost btn-sm -ml-2.5">
           <ChevronLeft size={16} />
           Notes
         </Link>
@@ -66,38 +87,23 @@ export function NoteEditor({ note, apps }: { note: Note; apps: BoardApp[] }) {
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        onBlur={() => title !== note.title && save({ title })}
+        onBlur={flush}
         placeholder="Titre"
         aria-label="Titre de la note"
-        autoFocus={isFresh}
+        autoFocus={!note.title && !note.body}
         className="plain-text w-full bg-transparent text-[26px] font-extrabold tracking-[-0.01em] outline-none placeholder:text-faint"
       />
-      <p className="mt-1 mb-6 text-[12.5px] text-muted">Modifiée le {updated}</p>
+      <p className="mt-1 mb-4 text-[12.5px] text-muted">Modifiée le {updated}</p>
 
-      {editing ? (
-        <textarea
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          onBlur={() => {
-            if (body !== note.body) save({ body });
-            setEditing(false);
-          }}
-          autoFocus={!isFresh}
-          placeholder="Écris en markdown : # titres, - listes, **gras**, [liens](https://…)"
-          aria-label="Contenu de la note"
-          className="plain-text min-h-[55vh] w-full flex-1 resize-none bg-transparent text-[15px] leading-relaxed outline-none placeholder:text-faint"
-        />
-      ) : (
-        <button type="button" className="min-h-[55vh] w-full flex-1 cursor-text text-left" onClick={() => setEditing(true)}>
-          {body ? (
-            <div className="prose-qg text-[15px]">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{body}</ReactMarkdown>
-            </div>
-          ) : (
-            <span className="text-[14px] text-faint">Note vide, clique pour écrire.</span>
-          )}
-        </button>
-      )}
+      <textarea
+        ref={area}
+        value={body}
+        onChange={(e) => setBody(e.target.value)}
+        onBlur={flush}
+        placeholder="Écris ici…"
+        aria-label="Contenu de la note"
+        className="plain-text block min-h-[60vh] w-full resize-none overflow-hidden rounded-none bg-transparent p-0 text-[15px] leading-relaxed outline-none placeholder:text-faint"
+      />
     </div>
   );
 }

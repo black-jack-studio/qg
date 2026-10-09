@@ -3,7 +3,6 @@
 import { FileText, Link2, Pin, PinOff, Plus } from "lucide-react";
 import { useRef, useState, useTransition } from "react";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { createLink, createNote, deleteLink, deleteNote, saveNote } from "@/app/actions";
 import type { Link, Note } from "@/db/schema";
 import { ConfirmButton } from "./confirm-button";
@@ -130,7 +129,7 @@ function NoteCard({ note, startEditing }: { note: Note; startEditing: boolean })
         <button type="button" className="block w-full cursor-text px-4 py-3 text-left" onClick={() => setEditing(true)}>
           {note.body ? (
             <div className="prose-qg">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{note.body}</ReactMarkdown>
+              <ReactMarkdown>{note.body}</ReactMarkdown>
             </div>
           ) : (
             <span className="text-[13px] text-faint">Note vide, clique pour écrire.</span>
