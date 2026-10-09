@@ -114,7 +114,7 @@ function NoteCard({ note, startEditing }: { note: Note; startEditing: boolean })
             placeholder="Titre"
             aria-label="Titre de la note"
             autoFocus={startEditing}
-            className="min-w-0 flex-1 bg-transparent text-[16px] font-bold outline-none placeholder:text-faint"
+            className="plain-text min-w-0 flex-1 bg-transparent text-[16px] font-bold outline-none placeholder:text-faint"
           />
         ) : (
           <h3 className="min-w-0 flex-1 truncate text-[16px] font-bold">{note.title || "Sans titre"}</h3>
@@ -131,7 +131,7 @@ function NoteCard({ note, startEditing }: { note: Note; startEditing: boolean })
           rows={Math.min(24, Math.max(6, body.split("\n").length + 1))}
           placeholder="Écris en markdown : # titres, - listes, **gras**, - [ ] case à cocher, [liens](https://…)"
           aria-label="Contenu de la note"
-          className="block w-full resize-y bg-transparent px-4 py-3 font-mono text-[13px] leading-relaxed outline-none placeholder:text-faint"
+          className="plain-text block w-full resize-y bg-transparent px-4 py-3 font-mono text-[13px] leading-relaxed outline-none placeholder:text-faint"
         />
       ) : (
         // Pas un <button> : le markdown rendu peut contenir des cases à cocher, interactives elles-mêmes.

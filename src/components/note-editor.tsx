@@ -77,7 +77,7 @@ export function NoteEditor({ note, apps }: { note: Note; apps: BoardApp[] }) {
         placeholder="Titre"
         aria-label="Titre de la note"
         autoFocus={isFresh}
-        className="w-full bg-transparent text-[26px] font-extrabold tracking-[-0.01em] outline-none placeholder:text-faint"
+        className="plain-text w-full bg-transparent text-[26px] font-extrabold tracking-[-0.01em] outline-none placeholder:text-faint"
       />
       <p className="mt-1 mb-6 text-[12.5px] text-muted">Modifiée le {updated}</p>
 
@@ -92,7 +92,7 @@ export function NoteEditor({ note, apps }: { note: Note; apps: BoardApp[] }) {
           autoFocus={!isFresh}
           placeholder="Écris en markdown : # titres, - listes, **gras**, - [ ] case à cocher, [liens](https://…)"
           aria-label="Contenu de la note"
-          className="min-h-[55vh] w-full flex-1 resize-none bg-transparent text-[15px] leading-relaxed outline-none placeholder:text-faint"
+          className="plain-text min-h-[55vh] w-full flex-1 resize-none bg-transparent text-[15px] leading-relaxed outline-none placeholder:text-faint"
         />
       ) : (
         // Pas un <button> : le markdown rendu peut contenir des cases à cocher, interactives elles-mêmes.

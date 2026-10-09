@@ -53,6 +53,11 @@ body {
   outline-offset: 2px;
 }
 
+/* Champs texte "nus" (titre et corps d'une note) : pas de cadre au focus, juste du texte. */
+.plain-text:focus-visible {
+  outline: none;
+}
+
 /* Aucun angle droit, y compris l'anneau de focus des champs et boutons nus
    (:where = spécificité nulle, les classes .field/.btn gardent leur propre radius). */
 :where(input:not([type="checkbox"], [type="radio"]), textarea, button, a) {
