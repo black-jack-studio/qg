@@ -100,7 +100,6 @@ export function NoteEditor({ note, apps }: { note: Note; apps: BoardApp[] }) {
         value={body}
         onChange={(e) => setBody(e.target.value)}
         onBlur={flush}
-        placeholder="Écris ici…"
         aria-label="Contenu de la note"
         className="plain-text block min-h-[60vh] w-full resize-none overflow-hidden rounded-none bg-transparent p-0 text-[15px] leading-relaxed outline-none placeholder:text-faint"
       />
