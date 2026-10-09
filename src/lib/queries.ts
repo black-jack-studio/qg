@@ -71,6 +71,12 @@ export async function listServices(appId?: number | null) {
     .orderBy(asc(services.category), asc(services.name));
 }
 
+export async function getNote(id: number) {
+  const db = await getDb();
+  const [note] = await db.select().from(notes).where(eq(notes.id, id));
+  return note ?? null;
+}
+
 export async function listNotes(appId?: number | null) {
   const db = await getDb();
   return db
