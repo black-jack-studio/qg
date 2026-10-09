@@ -71,18 +71,22 @@ export async function listServices(appId?: number | null) {
     .orderBy(asc(services.category), asc(services.name));
 }
 
-export async function listNotes(appId: number | null) {
+export async function listNotes(appId?: number | null) {
   const db = await getDb();
   return db
     .select()
     .from(notes)
-    .where(byScope(notes.appId, appId))
+    .where(appId === undefined ? undefined : byScope(notes.appId, appId))
     .orderBy(desc(notes.pinned), desc(notes.updatedAt));
 }
 
-export async function listLinks(appId: number | null) {
+export async function listLinks(appId?: number | null) {
   const db = await getDb();
-  return db.select().from(links).where(byScope(links.appId, appId)).orderBy(asc(links.id));
+  return db
+    .select()
+    .from(links)
+    .where(appId === undefined ? undefined : byScope(links.appId, appId))
+    .orderBy(asc(links.id));
 }
 
 export async function scopeCounts(appId: number | null) {

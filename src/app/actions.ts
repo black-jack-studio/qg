@@ -248,7 +248,7 @@ export async function createNote(appId: number | null) {
   return row.id;
 }
 
-export async function saveNote(id: number, patch: { title?: string; body?: string; pinned?: boolean }) {
+export async function saveNote(id: number, patch: { title?: string; body?: string; pinned?: boolean; appId?: number | null }) {
   const db = await getDb();
   await db
     .update(notes)
@@ -256,6 +256,7 @@ export async function saveNote(id: number, patch: { title?: string; body?: strin
       ...(patch.title !== undefined && { title: patch.title.slice(0, 200) }),
       ...(patch.body !== undefined && { body: patch.body.slice(0, 100_000) }),
       ...(patch.pinned !== undefined && { pinned: patch.pinned }),
+      ...(patch.appId !== undefined && { appId: patch.appId }),
       updatedAt: new Date(),
     })
     .where(eq(notes.id, id));

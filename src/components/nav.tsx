@@ -1,6 +1,6 @@
 "use client";
 
-import { KeyRound, Layers, LayoutGrid, ListChecks, Plus } from "lucide-react";
+import { KeyRound, Layers, LayoutGrid, ListChecks, Plus, StickyNote } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AppSwatch } from "./badges";
@@ -11,6 +11,7 @@ type NavApp = { id: number; name: string; emoji: string; color: string; open: nu
 const SECTIONS = [
   { href: "/", label: "Vue d'ensemble", icon: LayoutGrid },
   { href: "/taches", label: "Tâches", icon: ListChecks },
+  { href: "/notes", label: "Notes", icon: StickyNote },
   { href: "/acces", label: "Accès", icon: KeyRound },
   { href: "/stack", label: "Stack", icon: Layers },
 ] as const;
@@ -86,7 +87,7 @@ export function TabBar() {
   return (
     <nav
       aria-label="Sections"
-      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-hair-soft bg-rail/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-hair-soft bg-rail/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
     >
       {SECTIONS.map(({ href, label, icon: Icon }) => {
         const active = isActive(pathname, href) || (href === "/" && pathname.startsWith("/apps"));
