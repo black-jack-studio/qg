@@ -4,10 +4,10 @@ import { ChevronLeft, Pin, PinOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { deleteNote, saveNote } from "@/app/actions";
 import type { Note } from "@/db/schema";
-import { toggleCheckboxAtLine } from "@/lib/checklist";
-import { ChecklistMarkdown } from "./checklist-markdown";
 import { ConfirmButton } from "./confirm-button";
 import type { BoardApp } from "./task-board";
 
@@ -23,13 +23,6 @@ export function NoteEditor({ note, apps }: { note: Note; apps: BoardApp[] }) {
   const updated = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }).format(
     new Date(note.updatedAt),
   );
-
-  const toggleCheck = (line: number) => {
-    const next = toggleCheckboxAtLine(body, line);
-    if (next === body) return;
-    setBody(next);
-    save({ body: next });
-  };
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[760px] flex-col px-4 pt-6 pb-12 sm:px-8 md:pt-10">
@@ -90,25 +83,20 @@ export function NoteEditor({ note, apps }: { note: Note; apps: BoardApp[] }) {
             setEditing(false);
           }}
           autoFocus={!isFresh}
-          placeholder="Écris en markdown : # titres, - listes, **gras**, - [ ] case à cocher, [liens](https://…)"
+          placeholder="Écris en markdown : # titres, - listes, **gras**, [liens](https://…)"
           aria-label="Contenu de la note"
           className="plain-text min-h-[55vh] w-full flex-1 resize-none bg-transparent text-[15px] leading-relaxed outline-none placeholder:text-faint"
         />
       ) : (
-        // Pas un <button> : le markdown rendu peut contenir des cases à cocher, interactives elles-mêmes.
-        <div
-          role="button"
-          tabIndex={0}
-          className="min-h-[55vh] w-full flex-1 cursor-text"
-          onClick={() => setEditing(true)}
-          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setEditing(true)}
-        >
+        <button type="button" className="min-h-[55vh] w-full flex-1 cursor-text text-left" onClick={() => setEditing(true)}>
           {body ? (
-            <ChecklistMarkdown body={body} onToggleLine={toggleCheck} className="prose-qg text-[15px]" />
+            <div className="prose-qg text-[15px]">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{body}</ReactMarkdown>
+            </div>
           ) : (
             <span className="text-[14px] text-faint">Note vide, clique pour écrire.</span>
           )}
-        </div>
+        </button>
       )}
     </div>
   );

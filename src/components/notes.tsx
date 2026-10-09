@@ -2,10 +2,10 @@
 
 import { FileText, Link2, Pin, PinOff, Plus } from "lucide-react";
 import { useRef, useState, useTransition } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { createLink, createNote, deleteLink, deleteNote, saveNote } from "@/app/actions";
 import type { Link, Note } from "@/db/schema";
-import { toggleCheckboxAtLine } from "@/lib/checklist";
-import { ChecklistMarkdown } from "./checklist-markdown";
 import { ConfirmButton } from "./confirm-button";
 
 export function NotesAndLinks({ notes, links, appId }: { notes: Note[]; links: Link[]; appId: number | null }) {
@@ -96,13 +96,6 @@ function NoteCard({ note, startEditing }: { note: Note; startEditing: boolean })
   const save = () => dirty && start(() => saveNote(note.id, { title, body }));
   const updated = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(note.updatedAt));
 
-  const toggleCheck = (line: number) => {
-    const next = toggleCheckboxAtLine(body, line);
-    if (next === body) return;
-    setBody(next);
-    start(() => saveNote(note.id, { body: next }));
-  };
-
   return (
     <article className="tile">
       <header className="flex items-center gap-2 px-4 pt-3">
@@ -129,25 +122,20 @@ function NoteCard({ note, startEditing }: { note: Note; startEditing: boolean })
           onChange={(e) => setBody(e.target.value)}
           onBlur={save}
           rows={Math.min(24, Math.max(6, body.split("\n").length + 1))}
-          placeholder="Écris en markdown : # titres, - listes, **gras**, - [ ] case à cocher, [liens](https://…)"
+          placeholder="Écris en markdown : # titres, - listes, **gras**, [liens](https://…)"
           aria-label="Contenu de la note"
           className="plain-text block w-full resize-y bg-transparent px-4 py-3 font-mono text-[13px] leading-relaxed outline-none placeholder:text-faint"
         />
       ) : (
-        // Pas un <button> : le markdown rendu peut contenir des cases à cocher, interactives elles-mêmes.
-        <div
-          role="button"
-          tabIndex={0}
-          className="block w-full cursor-text px-4 py-3 text-left"
-          onClick={() => setEditing(true)}
-          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setEditing(true)}
-        >
+        <button type="button" className="block w-full cursor-text px-4 py-3 text-left" onClick={() => setEditing(true)}>
           {note.body ? (
-            <ChecklistMarkdown body={note.body} onToggleLine={toggleCheck} />
+            <div className="prose-qg">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{note.body}</ReactMarkdown>
+            </div>
           ) : (
             <span className="text-[13px] text-faint">Note vide, clique pour écrire.</span>
           )}
-        </div>
+        </button>
       )}
 
       <footer className="flex items-center gap-1 border-t border-hair-soft px-2 py-1.5">
